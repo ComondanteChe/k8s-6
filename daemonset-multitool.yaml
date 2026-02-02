@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: daemonset-log
+spec:
+  selector:
+    matchLabels:
+      app: daemonset-log
+  template:
+    metadata:
+      labels:
+        app: daemonset-log
+    spec:
+      containers:
+      - name: multitool
+        image: praqma/network-multitool:latest
+        command: ["sh"]
+        args: ["-c", "sleep infinity"]
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: host-log
+          mountPath: /host/var/log
+          readOnly: true
+      volumes:
+      - name: host-log
+        hostPath:
+          path: /var/log
+          type: Directory

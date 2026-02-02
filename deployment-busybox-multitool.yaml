@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-busybox-multitool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox-multitool
+  template:
+    metadata:
+      labels:
+        app: busybox-multitool
+    spec:
+      containers:
+      - name: busybox
+        image: busybox:1.28
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo 'Запись от $(date)' >> /data/my_log.txt; sleep 5; done"]
+        volumeMounts: 
+        - name: storage-volume
+          mountPath: /data
+      - name: multitool
+        image: praqma/network-multitool:latest
+        ports:
+        - containerPort: 80
+        volumeMounts: 
+        - name: storage-volume
+          mountPath: /data
+      volumes:
+      - name: storage-volume
+        emptyDir: {}
